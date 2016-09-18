@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-head-line">PROJETO </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                <div class="panel-heading">
+                    NOVO PROJETO
+                </div>
+                <div class="panel-body">
+                    <form method="post">{% csrf_token %}
+                        {{ form.as_p }}
+                        <a type="button" class="btn btn-primary" href="{ problema_list }">Próximo</a>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

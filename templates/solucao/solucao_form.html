@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-head-line">Soluções </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Tarefa
+                    </div>
+                    <b>Titulo:</b>
+                    <br>
+                    {{ tarefaSol.titulo }}
+                    <br>
+                    <b>Descrição:</b>
+                    <br>
+                    {{ tarefaSol.descricao }}
+                    <br>
+                </div>
+                <p>{{ numSolucao }} Soluções</p>
+                {% for sol in solucaos %}
+                <ul class="list-group list-resposta">
+                    <li class="list-group-item">
+                        <p>{{ sol.descricao }}</p> 
+                        <a href="#">Comentar</a>
+                    </li>
+                </ul>
+                {% endfor %}
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        SOLUÇÃO
+                    </div>
+                    
+                    <div class="panel-body">
+                        <form method="post">{% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="submit" value="Submit" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
