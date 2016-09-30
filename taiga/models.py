@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from taggit.managers import TaggableManager
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager, PermissionsMixin
+from django.contrib.auth.base_user import AbstractBaseUser
 import json
 
 
@@ -30,16 +31,23 @@ class ItemConhecimento(models.Model):
         return self.descricao
 
 
+class Team(models.Model):
+    
+    nome = models.CharField(max_length=200)
+    email = models.EmailField(null=True)
+
+    def __str__(self):
+        return 'Nome: ' + self.nome + ' , Email: ' + str(self.email)
+
 class Projeto(models.Model):
     
     projeto_id = models.IntegerField()
     nome = models.CharField(max_length=200)
-    email = models.EmailField(null=True)
     permalink = models.CharField(max_length=200)
-    pessoa = models.ManyToManyField(User)
+    time = models.ForeignKey(Team, null=True)
     
     def __str__(self):
-        return self.nome + ' Usuario: ' + str(self.pessoa.count())
+        return self.nome + ' ,Time: ' + str(self.time)
 
     def get_sprint_url(self):
         return u"/sprint/list/%i" % self.id
@@ -83,7 +91,7 @@ class Sprint(models.Model):
     
     
     def __unicode__(self):
-        return self.nome + self.is_closed
+        return self.nome + ', Finalizado: ' + self.is_closed
 
     def get_userstory_url(self):
         return u"/userstory/list/%i" % self.id
@@ -97,14 +105,19 @@ class UserStory(models.Model):
     tags = models.CharField(max_length=200)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=True)
     
+    
     def __unicode__(self):
-        return self.titulo + ', ' + str(self.sprint) + ', tags: ' + self.tags
+        return  self.titulo + " - " + str(self.ident)
+        
     
     def setTags(self, x):
         self.tags = json.dumps(x)
 
     def getTags(self):
         return json.loads(self.tags)
+    
+    def get_tarefas_url(self):
+        return u"/tarefa/list/%i" % self.id
 
 
 class Task(models.Model):
@@ -122,7 +135,7 @@ class Task(models.Model):
     user = models.CharField(max_length=200, blank=True)
     
     def __unicode__(self):
-        return 'Id: ' + str(self.ident) + ', Descricao: ' + self.descricao
+        return 'Titulo: ' + self.titulo + ' userStory:' + str(self.userStory)
     
     def setTags(self, x):
         self.tags = json.dumps(x)
@@ -167,3 +180,11 @@ class Solucao(models.Model):
 
     def get_solucao_new_url(self):
         return u"/solucao/new/%i" % self.id
+
+
+class Usuario(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    time = models.ForeignKey(Team, null=True)
+    
+    def __str__(self):
+        return self.user.username

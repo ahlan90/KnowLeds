@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from taiga.models import Projeto, Problema, Solucao, ItemConhecimento, PessoaConhecimento, Link, Livro
+from taiga.models import Projeto, Problema, Solucao, ItemConhecimento, PessoaConhecimento, Link, Livro, Usuario, Team
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm 
 from django import forms
@@ -40,7 +40,20 @@ class LoginForm(AuthenticationForm):
 class ProjetoForm(ModelForm):
     class Meta:
         model = Projeto
-        fields = ['nome', 'email']
+        fields = ['nome']
+
+
+class TeamForm(ModelForm):
+    
+    nome = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Nome Equipe"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email Equipe"))
+
+    class Meta:
+        model = Team
+        fields = ['nome','email']
+
+    #nome = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Nome Equipe"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    #email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email Equipe"))
 
 
 class PessoaConhecimentoForm(ModelForm):

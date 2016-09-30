@@ -5,23 +5,15 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.routers import DefaultRouter
 
 
-# router = DefaultRouter()
-# router.register(r'conhecimento/problemas', ProblemaViewSet)
-# router.register(r'conhecimento/tags',TagViewSet)
-# router.register(r'conhecimento/solucoes',SolucaoViewSet)
-# router.register(r'conhecimento/problemaForm', ProblemaCreate);
-# urlpatterns = router.urls
-
-
 urlpatterns = [
     
-    url(r'^$', views.home, name='home'),
+    #url(r'^$', views.home, name='home'),
     
     #url(r'^$', views.problema_list, name='problema_list'),
     
     #url(r'^wh/$', views.get_taiga_status),
     
-    url(r'^wh/(?P<username>\w+)/$', views.get_taiga_status),
+    url(r'^wh/(?P<nomeTime>\w+)/$', views.get_taiga_status),
     
     url(r'^problemas$', views.problema_list, name='problema_list'),
     
@@ -46,6 +38,8 @@ urlpatterns = [
     url(r'^userstory/list/(?P<pk>\d+)$', views.userstory_list, name='userstory_list'),
     
     url(r'^projetos$', views.projeto_list, name='projeto_list'),
+    
+    url(r'^$', views.projeto_list, name='projeto_list'),
     
     url(r'^issue/list/(?P<pk>\d+)$', views.issue_list, name='issue_list'),
     
