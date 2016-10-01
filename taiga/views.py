@@ -32,16 +32,16 @@ def home(request):
 @permission_classes((permissions.AllowAny,))
 def get_taiga_status(request, nomeTime):
    
-    print('AKIIII ' + nomeTime)
+    
     try:
         time = Team.objects.get(nome=nomeTime)
-        print('E do TIME: ' + time.nome)
     except:
         pass
     
+    
     if request.method == 'GET':
-        print ('GET')
         return Response("GET")
+
     elif request.method == 'POST':
         print ('POST')
         r = json.load(request)
@@ -66,6 +66,9 @@ def get_taiga_status(request, nomeTime):
             # Se for TASK
             elif r['type'] == 'task':
                 
+                projeto = projeto_save( r['data']['project'], time)
+                
+                userStory = userstory_save(r['data']['user_story'], projeto)
 
                 task = Task()
                 
@@ -74,7 +77,7 @@ def get_taiga_status(request, nomeTime):
                 task.ident = r['data']['id']
                 task.titulo = r['data']['subject']
                 task.descricao = r['data']['description']
-                task.userHistory = r['data']['user_story']['id']
+                task.userStory = userStory
                 task.tags = r['data']['tags']
                 task.is_closed = r['data']['status']['is_closed']
                 
@@ -88,7 +91,7 @@ def get_taiga_status(request, nomeTime):
           
                 textoTag = task.titulo + ' precisa de ajuda, voce sabe a solucao'
                 
-                """
+                """"
                     
                 for tag in task.getTags():
                     if tag == 'ajuda' or tag == 'Ajuda' or tag == 'AJUDA':
@@ -131,22 +134,25 @@ def get_taiga_status(request, nomeTime):
             # Se for TASK
             elif r['type'] == 'task':
                 
-                
-                
-                try:
-                    task = Task.objects.get(ident=r['data']['id'])
-                except:
+                if Task.objects.filter(ident=r['data']['id']):
+                    task = Task.objects.filter(ident=r['data']['id'])[0]
+                else:
                     task = Task()
-                    pass
+                
+                
+                projeto = projeto_save( r['data']['project'], time)
+                
+                userStory = userstory_save(r['data']['user_story'], projeto)
+                
+                print("\n\nOlha aqui o user story: " + str(userStory))
                 
                 # Atributos para salvar 
                 task.ident = r['data']['id']
                 task.titulo = r['data']['subject']
                 task.descricao = r['data']['description']
-                task.userHistory = r['data']['user_story']['id']
+                task.userStory = userStory
                 task.tags = r['data']['tags']
                 task.is_closed = r['data']['status']['is_closed']
-                task.sprint_id = r['data']['milestone']['id']
                 
                 try:
                     ##identificar qual user
@@ -155,6 +161,8 @@ def get_taiga_status(request, nomeTime):
                     pass
             
                 task.save()
+                
+                """
                 
                 texto = ''
                 
@@ -181,6 +189,9 @@ def get_taiga_status(request, nomeTime):
                         print('Mandando o email...')
                         send_mail('Ajuda em UserStory', textoTag, 'ahlan90@gmail.com', ['ahlan90@gmail.com'], fail_silently=False)
 
+                """
+                
+                
             # Se for ISSUE
             elif r['type'] == 'issue':
                 
@@ -201,6 +212,7 @@ def get_taiga_status(request, nomeTime):
                 
                 issue.save()
 
+                """
                 textoTag = issue.titulo + ' precisa de ajuda, voce sabe a solucao'
                 
                 for tag in issue.getTags():
@@ -208,6 +220,9 @@ def get_taiga_status(request, nomeTime):
                         print('Mandando o email...')
                         send_mail('Ajuda em UserStory', textoTag, 'ahlan90@gmail.com', ['ahlan90@gmail.com'], fail_silently=False)
 
+                """
+
+                
             #Se for SPRINT
             elif r['type'] == 'milestone':
                 
@@ -364,7 +379,9 @@ def get_json_atribute(atributo, atributo_json):
 
 def sprint_list(request, pk, template_name='sprint/sprint_list.html'):
     
-    sprints = Sprint.objects.all().filter(pk=pk)
+    projeto = Projeto.objects.get(pk=pk)
+    
+    sprints = Sprint.objects.all().filter(projeto=projeto)
     data = {}
     data['object_list'] = sprints
     return render(request, template_name, data)
@@ -379,7 +396,11 @@ def sprint_list(request, pk, template_name='sprint/sprint_list.html'):
 
 def issue_list(request, pk, template_name='issue/issue_list.html'):
     
-    issues = Issue.objects.all().filter(pk=pk)
+    projeto = Projeto.objects.get(pk=pk)
+    
+    issues = Issue.objects.all().filter(projeto=projeto)
+    
+    print('Tamanho ISSUE: ' + str(len(issues)))
     data = {}
     data['object_list'] = issues
     return render(request, template_name, data)
@@ -526,10 +547,6 @@ def userstory_save(jsonLoad, meuProjeto):
         userStory.setTags(jsonLoad['tags'])
         userStory.sprint = sprint
         
-        """try:
-            userStory.sprint = sprint
-        except:
-            pass
         """
         
         textoTag = userStory.titulo + ' precisa de ajuda, voce sabe a solucao'
@@ -538,6 +555,8 @@ def userstory_save(jsonLoad, meuProjeto):
             if tag == 'ajuda' or tag == 'Ajuda' or tag == 'AJUDA':
                 print('Mandando o email...')
                 send_mail('Ajuda em UserStory', textoTag, 'ahlan90@gmail.com', ['ahlan90@gmail.com'], fail_silently=False)
+        
+        """
         
         userStory.save()
         

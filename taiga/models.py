@@ -157,7 +157,7 @@ class Issue(models.Model):
     projeto = models.ForeignKey(Projeto, null=True)
     
     def __unicode__(self):
-        return str(self.ident) + " " + self.descricao
+        return str(self.projeto) + " " + self.descricao
 
     def setTags(self, x):
         self.tags = json.dumps(x)
