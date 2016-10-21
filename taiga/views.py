@@ -1,4 +1,4 @@
-from taiga.models import Solucao, Problema, Team
+from taiga.models import Solucao, Problema, ProjetoKnowLeds
 # from gestao.serializers import TagSerializer, SolucaoSerializer, ProblemaSerializer
 from rest_framework import generics
 from django.contrib.auth.models import User, Group
@@ -7,12 +7,12 @@ from django.views.generic import CreateView
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.core.urlresolvers import reverse_lazy
-from taiga.forms import ProblemaForm, SolucaoForm, ProjetoForm, LoginForm, RegistrationForm, TeamForm
+from taiga.forms import ProblemaForm, SolucaoForm, ProjetoForm, LoginForm, RegistrationForm, ProjetoKnowLedsForm, SolucaoIssueForm, IntegranteForm
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
-from models import Sprint, Task, Issue, UserStory, Projeto, Usuario
+from models import Sprint, Task, Issue, UserStory, Projeto, Usuario, SolucaoIssue
 from django.core.mail import send_mail
 import json
 from django.http import HttpResponseRedirect, HttpResponse
@@ -30,11 +30,11 @@ def home(request):
 @csrf_exempt
 @api_view(['GET', 'POST'])
 @permission_classes((permissions.AllowAny,))
-def get_taiga_status(request, nomeTime):
+def get_taiga_status(request, nomeProjeto):
    
     
     try:
-        time = Team.objects.get(nome=nomeTime)
+        projeto_knowleds = ProjetoKnowLeds.objects.get(nome=nomeProjeto)
     except:
         pass
     
@@ -50,7 +50,7 @@ def get_taiga_status(request, nomeTime):
             # Se for SPRINT
             if r['type'] == 'milestone':
                 
-                projeto = projeto_save(r['data']['project'], time)
+                projeto = projeto_save(r['data']['project'], projeto_knowleds)
                 
                 sprint_save(r['data'], projeto)
 
@@ -58,7 +58,9 @@ def get_taiga_status(request, nomeTime):
             # Se for USER HISTORY
             elif r['type'] == 'userstory':
                 
-                projeto = projeto_save(r['data']['project'], time)
+                projeto = projeto_save(r['data']['project'], projeto_knowleds)
+                
+                print('ALGO MUDOU:  ' + str(r))
                 
                 userstory_save(r['data'],projeto)
 
@@ -66,7 +68,7 @@ def get_taiga_status(request, nomeTime):
             # Se for TASK
             elif r['type'] == 'task':
                 
-                projeto = projeto_save( r['data']['project'], time)
+                projeto = projeto_save( r['data']['project'], projeto_knowleds)
                 
                 userStory = userstory_save(r['data']['user_story'], projeto)
 
@@ -104,7 +106,7 @@ def get_taiga_status(request, nomeTime):
             # Se for ISSUE
             elif r['type'] == 'issue':
                 
-                projeto = projeto_save(r['data']['project'], time)
+                projeto = projeto_save(r['data']['project'], projeto_knowleds)
                 
                 issue = Issue()
                 
@@ -126,7 +128,7 @@ def get_taiga_status(request, nomeTime):
             if r['type'] == 'userstory':
 
                 
-                projeto = projeto_save(r['data']['project'], time)
+                projeto = projeto_save(r['data']['project'], projeto_knowleds)
                 
                 userstory_save(r['data'],projeto)
                 
@@ -140,7 +142,7 @@ def get_taiga_status(request, nomeTime):
                     task = Task()
                 
                 
-                projeto = projeto_save( r['data']['project'], time)
+                projeto = projeto_save( r['data']['project'], projeto_knowleds)
                 
                 userStory = userstory_save(r['data']['user_story'], projeto)
                 
@@ -195,7 +197,7 @@ def get_taiga_status(request, nomeTime):
             # Se for ISSUE
             elif r['type'] == 'issue':
                 
-                projeto = projeto_save(r['data']['project'], time)
+                projeto = projeto_save(r['data']['project'], projeto_knowleds)
                 
                 try:
                     issue = Issue.objects.get(ident=r['data']['id'])
@@ -226,7 +228,7 @@ def get_taiga_status(request, nomeTime):
             #Se for SPRINT
             elif r['type'] == 'milestone':
                 
-                projeto = projeto_save(r['data']['project'], time)
+                projeto = projeto_save(r['data']['project'], projeto_knowleds)
                 
                 sprint_save(r['data'], projeto)
                 
@@ -295,7 +297,27 @@ def solucao_create(request, pk, template_name='solucao/solucao_form.html'):
     
     if form.is_valid():
         form.save()
-        return HttpResponseRedirect('https://knowleds-ahlan90.c9users.io/solucao/new/2')
+        return HttpResponseRedirect('https://knowleds-ahlan90.c9users.io/solucao/new/'+pk)
+    
+    context = {'form':form , 'tarefaSol':tarefaSol, 'solucaos':solucaos, 'numSolucao':numSolucao}
+    
+    return render(request, template_name, context)
+
+def solucao_issue(request, pk, template_name='solucao/solucao_form.html'):
+    
+    """ Problema para as solucoes """
+    tarefaSol = Issue.objects.get(pk=pk)
+    
+    """ Lista das solucoes ja cadastradas ao problema """
+    solucaos = SolucaoIssue.objects.all().filter(issue=tarefaSol)
+    
+    numSolucao = len(solucaos)
+    
+    form = SolucaoIssueForm(request.POST or None, initial={'issue':tarefaSol}) 
+    
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect('https://knowleds-ahlan90.c9users.io/solucao/issue/new/'+pk)
     
     context = {'form':form , 'tarefaSol':tarefaSol, 'solucaos':solucaos, 'numSolucao':numSolucao}
     
@@ -329,9 +351,11 @@ def projeto_create(request, template_name='projeto/projeto_form.html'):
         return redirect('projeto_integration')
     return render(request, template_name, {'form':form})
 
+
+@login_required
 def projeto_list(request, template_name='projeto/projeto_list.html'):
     
-    usuario = Usuario.objects.filter(user=request.user)[0]
+    usuario = Usuario.objects.get(user=request.user)
     """ Lista das solucoes ja cadastradas ao problema """
     projetos = Projeto.objects.all().filter(time=usuario.time)
 
@@ -440,22 +464,25 @@ def userstory_list(request, pk, template_name='userstory/userstory_list.html'):
 def register(request, template_name='registration/register.html'):
     if request.method == 'POST':
         form = RegistrationForm(request.POST, prefix='form')
-        form2 = TeamForm(request.POST, prefix='form2')
-        if form.is_valid() and form2.is_valid():
+        #form2 = ProjetoKnowLedsForm(request.POST, prefix='form2')
+        #if form.is_valid() and form2.is_valid():
+        if form.is_valid():
             user1 = User.objects.create_user(
             username=form.cleaned_data['username'],
             password=form.cleaned_data['password1'],
             email=form.cleaned_data['email']
             )
+            
             usuario = Usuario()
             usuario.user = user1
-            usuario.time = form2.save()
             usuario.save()
+        
             return HttpResponseRedirect('/register/success/')
     else:
         form = RegistrationForm(prefix='form')
-        form2 = TeamForm(prefix='form2')
-    context = {'form': form, 'form2' : form2}
+        #form2 = ProjetoKnowLedsForm(prefix='form2')
+    #context = {'form': form, 'form2' : form2}
+    context = {'form': form}
     variables = RequestContext(request, context)
  
     return render_to_response('registration/register.html', variables,)
@@ -466,15 +493,57 @@ def register_success(request):
 def logout_page(request):
     logout(request)
     return HttpResponseRedirect('/')
- 
 
 
+"""
+    TIME
+"""
+
+@login_required
+def projetoknowleds_create(request, template_name='projetoknowleds/projetoknowleds_form.html'):
+    
+    form = ProjetoKnowLedsForm(request.POST or None)
+    if form.is_valid():
+        projeto_knowleds = form.save()
+        projeto_knowleds.usuarios.add(request.user)
+        projeto_knowleds.save()
+        return redirect('knowleds_list')
+    return render(request, template_name, {'form':form})
+
+@login_required
+def projetoknowleds_list(request, template_name='projetoknowleds/projetoknowleds_list.html'):
+    
+    #usuario = Usuario.objects.get(user=request.user)
+    """ Lista das solucoes ja cadastradas ao problema """
+    projetos = ProjetoKnowLeds.objects.all().filter(usuarios=request.user)
+
+    data = {}
+    data['object_list'] = projetos
+    #data['usuario'] = usuario
+    
+    return render(request, template_name, data)
+
+
+def user_create(request, pk, template_name='projetoknowleds/projetoknowleds_user.html'):
+    form = IntegranteForm(request.POST or None)
+    if form.is_valid():
+        try:
+            user = form.save(commit=False)
+            user = User.objects.get(email=user.email)
+            projeto = ProjetoKnowLeds.objects.get(pk=pk)
+            projeto.usuarios.add(user)
+            user.save()
+            return redirect('knowleds_list')
+        except User.DoesNotExist:
+            template_name ='projetoknowleds/projetoknowleds_register.html'
+            return render(request, template_name)
+    return render(request, template_name, {'form':form})
 
 """
     PARSERS
 """
 
-def projeto_save(jsonLoad, meuTime):
+def projeto_save(jsonLoad, projetoKnowLeds):
         
     if Projeto.objects.filter(projeto_id=jsonLoad['id']):
         projeto = Projeto.objects.filter(projeto_id=jsonLoad['id'])[0]
@@ -484,7 +553,7 @@ def projeto_save(jsonLoad, meuTime):
     projeto.projeto_id = jsonLoad['id']
     projeto.permalink = jsonLoad['permalink']
     projeto.nome = jsonLoad['name']
-    projeto.time = meuTime
+    projeto.projeto_knowleds = projetoKnowLeds
     
     projeto.save()
     
@@ -530,9 +599,6 @@ def userstory_save(jsonLoad, meuProjeto):
         pass
 
     
-        
-    print("\n\n\n\nOLHA O PRINT AKIIII: " + str(userStory.ident) + " O ID do outro: " + str(jsonLoad['id']))
-    
     if(jsonLoad['milestone'] != None):
         sprint = sprint_save(jsonLoad['milestone'], meuProjeto)
     else:
@@ -561,7 +627,7 @@ def userstory_save(jsonLoad, meuProjeto):
         userStory.save()
         
     except Exception as e:
-        print e
+        print(e)
         pass
     
     return userStory

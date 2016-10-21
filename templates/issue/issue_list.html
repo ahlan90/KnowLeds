@@ -18,7 +18,7 @@
                         <h4><a href="{{ atleta.get_atleta_update_url }}">{{ issue.titulo }}</a></h4>
                         <p>{{ issue.descricao }}</p> 
                         <p>{{ issue.numeroSolucoes }}</p> 
-                        <a href="{{ tarefa.get_solucao_new_url }}">Solucionar</a>
+                        <a href="{{ issue.get_solucao_new_url }}">Solucionar</a>
                     </li>
                 </ul>
                 {% endfor %}

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'taiga',
     'core',
+    'multi_email_field',
 ]
 
 REST_FRAMEWORK = {
@@ -189,6 +190,6 @@ EMAIL_PORT = 587
 
 EMAIL_USE_TLS = True
 
-LOGIN_REDIRECT_URL = 'projeto_list'
+LOGIN_REDIRECT_URL = 'knowleds_list'
 
 LOGIN_URL = 'login'

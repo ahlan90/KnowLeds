@@ -1,9 +1,7 @@
 from django.forms import ModelForm
-from taiga.models import Projeto, Problema, Solucao, ItemConhecimento, PessoaConhecimento, Link, Livro, Usuario, Team
+from taiga.models import Projeto, Problema, Solucao, ItemConhecimento, PessoaConhecimento, Link, Livro, Usuario, ProjetoKnowLeds, SolucaoIssue
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm 
-from django import forms
-from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
@@ -24,6 +22,15 @@ class SolucaoForm(ModelForm):
         fields = ['tarefa' , 'descricao']
 
 
+class SolucaoIssueForm(ModelForm):
+    class Meta:
+        model = SolucaoIssue
+        widgets = {
+            'issue' : forms.HiddenInput()
+        }
+        fields = ['issue' , 'descricao']
+
+
 class ItemConhecimentoForm(ModelForm):
     class Meta:
         model = ItemConhecimento
@@ -32,9 +39,9 @@ class ItemConhecimentoForm(ModelForm):
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label="Username", max_length=30, 
-                               widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'username'}))
+                               widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'username', 'placeholder': 'Usuario'}))
     password = forms.CharField(label="Password", max_length=30, 
-                               widget=forms.PasswordInput(attrs={'class': 'form-control', 'name': 'password'}))
+                               widget=forms.PasswordInput(attrs={'class': 'form-control', 'name': 'password', 'placeholder':'Password'}))
 
 
 class ProjetoForm(ModelForm):
@@ -43,18 +50,21 @@ class ProjetoForm(ModelForm):
         fields = ['nome']
 
 
-class TeamForm(ModelForm):
+class ProjetoKnowLedsForm(ModelForm):
     
-    nome = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Nome Equipe"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email Equipe"))
-
+    nome = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Nome Projeto"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email Projeto"))
+    
     class Meta:
-        model = Team
+        model = ProjetoKnowLeds
         fields = ['nome','email']
 
-    #nome = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Nome Equipe"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
-    #email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email Equipe"))
 
+class TeamForm(forms.Form):
+    
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email Integrante"))
+    
+    
 
 class PessoaConhecimentoForm(ModelForm):
     class Meta:
@@ -76,10 +86,10 @@ class LivroForm(ModelForm):
 
 class RegistrationForm(forms.Form):
  
-    username = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Username"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label=_("Email address"))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs=dict(required=True, max_length=30, render_value=False)), label=_("Password"))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs=dict(required=True, max_length=30, render_value=False)), label=_("Password (again)"))
+    username = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs={ 'required' : 'True', 'max_length' : '30', 'placeholder' : 'Usuario', 'class' : 'form-control'}), label=_(""), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    email = forms.EmailField(widget=forms.TextInput(attrs={'required' : 'True', 'max_length' : '30', 'placeholder' : 'Email', 'class' : 'form-control'}), label=_(""))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'required' : 'True', 'max_length' : '30', 'placeholder' : 'Senha', 'render_value':'False', 'class' : 'form-control'}), label=_(""))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'required' : 'True', 'max_length' : '30', 'placeholder' : 'Senha (novamente)', 'render_value':'False', 'class' : 'form-control'}), label=_(""))
  
     def clean_username(self):
         try:
@@ -93,3 +103,10 @@ class RegistrationForm(forms.Form):
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields did not match."))
         return self.cleaned_data
+
+
+class IntegranteForm(ModelForm):
+    
+   class Meta:
+       model = User
+       fields = ['email']

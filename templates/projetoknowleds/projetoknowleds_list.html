@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-head-line">PROJETOS </h1>
+                <span><a href="{% url 'knowleds_new' %}" class="btn btn-primary">Novo +</a></span>
+            </div>
+        </div>
+        <div class="row">
+            
+            <div class="panel-body">
+                {% for projeto in object_list %}
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <h4>{{ projeto.nome }}</a></h4>
+                        <p>Link Integração: https://knowleds-ahlan90.c9users.io/wh/{{ projeto.nome }}</p> 
+                        <a href="{{ projeto.get_sprint_url }}">Sprints</a>
+                        <a href="{{ projeto.get_issue_url }}">Issues</a>
+                        <a href="{{ projeto.get_user_url }}">Integrantes</a>
+                    </li>
+                </ul>
+                {% endfor %}
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-head-line">TAREFAS </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel-body">
+                {% for usuario in object_list %}
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <p>{{ usuario.email }}</p> 
+                    </li>
+                </ul>
+                {% endfor %}
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+

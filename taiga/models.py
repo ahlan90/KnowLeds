@@ -31,23 +31,45 @@ class ItemConhecimento(models.Model):
         return self.descricao
 
 
-class Team(models.Model):
+class Usuario(models.Model):
+    
+    user = models.OneToOneField(User, null=True)
+    email = models.EmailField()
+    
+    def __str__(self):
+        return self.email
+
+
+
+class ProjetoKnowLeds(models.Model):
     
     nome = models.CharField(max_length=200)
     email = models.EmailField(null=True)
+    usuarios = models.ManyToManyField(User)
 
     def __str__(self):
         return 'Nome: ' + self.nome + ' , Email: ' + str(self.email)
+    
+    def get_sprint_url(self):
+        return u"/sprint/list/%i" % self.id
+
+    def get_issue_url(self):
+        return u"/issue/list/%i" % self.id
+
+    def get_user_url(self):
+        return u"/integrante/new/%i" % self.id
+
 
 class Projeto(models.Model):
-    
+
     projeto_id = models.IntegerField()
     nome = models.CharField(max_length=200)
     permalink = models.CharField(max_length=200)
-    time = models.ForeignKey(Team, null=True)
+    projeto_knowleds = models.OneToOneField(ProjetoKnowLeds, null=True)
+    
     
     def __str__(self):
-        return self.nome + ' ,Time: ' + str(self.time)
+        return self.nome + ' ,Time: ' + str(self.projeto_knowleds)
 
     def get_sprint_url(self):
         return u"/sprint/list/%i" % self.id
@@ -101,7 +123,7 @@ class UserStory(models.Model):
 
     ident = models.IntegerField()
     titulo = models.CharField(max_length=200)
-    descricao = models.CharField(max_length=200)
+    descricao = models.CharField(max_length=200, null=True)
     tags = models.CharField(max_length=200)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=True)
     
@@ -156,6 +178,8 @@ class Issue(models.Model):
     is_closed = models.BooleanField()
     projeto = models.ForeignKey(Projeto, null=True)
     
+    numeroSolucoes = models.IntegerField(null=True)
+    
     def __unicode__(self):
         return str(self.projeto) + " " + self.descricao
 
@@ -165,14 +189,15 @@ class Issue(models.Model):
     def getTags(self):
         return json.loads(self.tags)
 
+    def get_solucao_new_url(self):
+        return u"/solucao/issue/new/%i" % self.id
+
 
 class Solucao(models.Model):
     
     descricao = models.CharField(max_length=200)
     
     tarefa = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
-    
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, null=True)
     
     def __str__(self):
         return 'Solucao[id: {id}, descricao: {descricao}]'.format(
@@ -182,9 +207,18 @@ class Solucao(models.Model):
         return u"/solucao/new/%i" % self.id
 
 
-class Usuario(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    time = models.ForeignKey(Team, null=True)
+class SolucaoIssue(models.Model):
+    
+    descricao = models.CharField(max_length=200)
+    
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, null=True)
     
     def __str__(self):
-        return self.user.username
+        return 'Solucao[id: {id}, descricao: {descricao}]'.format(
+            id=self.id, descricao=self.descricao)
+            
+    def get_solucao_new_url(self):
+        return u"/solucao/issue/new/%i" % self.id
+
+
+
