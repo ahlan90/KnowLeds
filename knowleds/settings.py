@@ -15,9 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/1.9/howto/deployment/chfcklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '$m0ogu%3wirm6cyslgtz6biu!myr7@0@nhphu=4*5_#uq4(f^5'
@@ -27,8 +26,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-
 
 
 INSTALLED_APPS = [
@@ -43,8 +40,8 @@ INSTALLED_APPS = [
     'taggit',
     'django_extensions',
     'widget_tweaks',
-    'taiga',
     'core',
+    'taiga',
     'multi_email_field',
 ]
 

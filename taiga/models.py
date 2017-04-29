@@ -3,6 +3,7 @@ from django.utils import timezone
 from taggit.managers import TaggableManager
 from django.contrib.auth.models import User, UserManager, PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
+
 import json
 
 
@@ -30,7 +31,7 @@ class ItemConhecimento(models.Model):
     def __str__(self):
         return self.descricao
 
-
+"""
 class Usuario(models.Model):
     
     user = models.OneToOneField(User, null=True)
@@ -58,14 +59,18 @@ class ProjetoKnowLeds(models.Model):
 
     def get_user_url(self):
         return u"/integrante/new/%i" % self.id
-
+    
+    def get_permalink(self):
+        projeto = Projeto.objects.get(id=self.id)
+        return projeto.permalink
+"""
 
 class Projeto(models.Model):
 
     projeto_id = models.IntegerField()
     nome = models.CharField(max_length=200)
     permalink = models.CharField(max_length=200)
-    projeto_knowleds = models.OneToOneField(ProjetoKnowLeds, null=True)
+    projeto_knowleds = models.OneToOneField('core.ProjetoKnowLeds', null=True)
     
     
     def __str__(self):
@@ -192,7 +197,7 @@ class Issue(models.Model):
     def get_solucao_new_url(self):
         return u"/solucao/issue/new/%i" % self.id
 
-
+"""
 class Solucao(models.Model):
     
     descricao = models.CharField(max_length=200)
@@ -220,5 +225,5 @@ class SolucaoIssue(models.Model):
     def get_solucao_new_url(self):
         return u"/solucao/issue/new/%i" % self.id
 
-
+"""
 

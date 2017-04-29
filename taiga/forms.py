@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from taiga.models import Projeto, Problema, Solucao, ItemConhecimento, PessoaConhecimento, Link, Livro, Usuario, ProjetoKnowLeds, SolucaoIssue
+from taiga.models import Projeto, Problema, ItemConhecimento, PessoaConhecimento, Link, Livro
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
@@ -12,7 +12,7 @@ class ProblemaForm(ModelForm):
         model = Problema
         fields = ['titulo','tags','descricao']
 
-
+"""
 class SolucaoForm(ModelForm):
     class Meta:
         model = Solucao
@@ -29,7 +29,7 @@ class SolucaoIssueForm(ModelForm):
             'issue' : forms.HiddenInput()
         }
         fields = ['issue' , 'descricao']
-
+"""
 
 class ItemConhecimentoForm(ModelForm):
     class Meta:

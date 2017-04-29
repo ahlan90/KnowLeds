@@ -1,44 +1,75 @@
 {% extends "base.html" %}
-
+{% load staticfiles %}
 
 {% block content %}
 
-<div class="content-wrapper">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="page-head-line">PROJETOS </h1>
-                <span><a href="{% url 'knowleds_new' %}" class="btn btn-primary">Novo +</a></span>
-            </div>
-        </div>
-        <div class="row">
-            
-            <div class="panel-body">
-                {% for projeto in object_list %}
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        <h4>{{ projeto.nome }}</a></h4>
-                        <p>Link Integração: https://knowleds-ahlan90.c9users.io/wh/{{ projeto.nome }}</p> 
-                        <a href="{{ projeto.get_sprint_url }}">Sprints</a>
-                        <a href="{{ projeto.get_issue_url }}">Issues</a>
-                        <a href="{{ projeto.get_user_url }}">Integrantes</a>
-                    </li>
-                </ul>
-                {% endfor %}
-            </div>
-            
-            
-        </div>
+
+<div class="row">
+    <div class="col-md-6">
+      <h1><i class="fa fa-angle-right"></i> Projetos</h1>
+    </div>
+    <div class="col-md-6 .col-md-offset-4 goright" >
+        <span><a href="{% url 'knowleds_new' %}" class="btn btn-primary">Novo +</a></span>
     </div>
 </div>
+<div class="row mt">
+     
+         
+    <div class="col-lg-12">
+        
+        {% for projeto in object_list %}
+        <div class="col-lg-4 col-md-4 col-sm-4 mb">
+        	<div class="weather-2 pn">
+        		<div class="weather-2-header">
+        			<div class="row">
+        				<div class="col-sm-6 col-xs-6">
+        					<p>{{ projeto.nome }}</p>
+        				</div>
+        			</div>
+        		</div><!-- /weather-2 header -->
+        		<div class="row centered">
+        		  <p><a class="btn btn-danger btn-sm pull-center" data-toggle="modal" data-target="#myModal{{ projeto.pk }}">Integrar</a></p>
+        		  
+        			<a href="{{ projeto.get_permalink }}">
+        			  <img src="{% static 'assets/img/taiga-logo.png' %}" href="{{ projeto.get_permalink }}" class="img-circle" width="100">	
+        			</a>
+        			 <br><br>
+        		</div>
+        		<div class="row data">
+        			<div class="col-sm-6 col-xs-6 goleft">
+        				 <a class="btn btn-success btn-sm pull-center " href="{{ projeto.get_sprint_url }}">Sprint</a>
+        			</div>
+
+        			<div class="col-sm-6 col-xs-6 goright">
+        				<a class="btn btn-default btn-sm pull-center " href="{{ projeto.get_issue_url }}">Issues</a>
+        			</div>
+        		</div>
+        	</div>
+        </div><! --/col-md-4 -->
+        
+        <div class="modal fade" id="myModal{{ projeto.pk }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Link para integração com Taiga: </h4>
+              </div>
+              <div class="modal-body">
+                Copie o link abaixo e adicione ao Webhook do Taiga:
+                <br>https://knowleds-ahlan90.c9users.io/wh/{{ projeto.nome }}/
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                <a type="button" class="btn btn-primary" target="_blank" href="{{ projeto.get_permalink }}/admin/third-parties/webhooks">Integrar</a>
+              </div>
+            </div>
+          </div>
+        </div> 
+        {% endfor %}
+        </div>
+</div>
+<!-- Modal -->
+
 
 {% endblock content %}
-
-
-
-
-
-
-
-
-
+						

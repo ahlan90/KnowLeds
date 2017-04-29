@@ -464,8 +464,7 @@ def userstory_list(request, pk, template_name='userstory/userstory_list.html'):
 def register(request, template_name='registration/register.html'):
     if request.method == 'POST':
         form = RegistrationForm(request.POST, prefix='form')
-        #form2 = ProjetoKnowLedsForm(request.POST, prefix='form2')
-        #if form.is_valid() and form2.is_valid():
+    
         if form.is_valid():
             user1 = User.objects.create_user(
             username=form.cleaned_data['username'],
