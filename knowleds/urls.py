@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^login/$', views.login, {'template_name': 'registration/login.html', 'authentication_form': LoginForm}, name='login'),
     url(r'^logout/$', views.logout, {'next_page': '/login'}),
     url(r'', include('taiga.urls')),
+    url(r'', include('core.urls')),
 ]

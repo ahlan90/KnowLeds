@@ -1,11 +1,28 @@
 {% extends "base.html" %}
-{% block title %}User Registration{% endblock %}
-{% block head %}User Registration{% endblock %}
+
+{% load staticfiles %}
+
 {% block content %}
-    <form method="post">{% csrf_token %}
-        <table border="0">
-            {{ form.as_table }}
-        </table>
-        <input type="submit" value="Cadastrar" />
-    </form>
+
+<h3><i class="fa fa-angle-right"></i> Projeto KnowLEDS</h3>
+          	
+          	<!-- BASIC FORM ELELEMNTS -->
+          	<div class="row mt">
+          		<div class="col-lg-5">
+                  <div class="form-panel">
+                  	  <h4 class="mb"><i class="fa fa-angle-right"></i> Novo</h4>
+                  	   <form class="form-horizontal style-form" method="post">{% csrf_token %}
+                            <table border="0">
+                                {{ form.nome }}
+                                <br>
+                                {{ form.email }}
+                                <br>
+                                <br>
+                            </table>
+                            <input type="submit" value="Cadastrar" />
+                        </form>
+                  </div>
+          		</div><!-- col-lg-12-->      	
+          	</div><!-- /row -->
+   
 {% endblock %}
