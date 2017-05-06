@@ -25,8 +25,9 @@ class SolucaoIssueForm(ModelForm):
 
 class ProjetoKnowLedsForm(ModelForm):
     
-    nome = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs={ 'required' : 'True', 'max_length' : '30', 'placeholder' : 'Nome do Projeto', 'class' : 'form-control'}), label=_("Nome Projeto"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
+    nome = forms.CharField(widget=forms.TextInput(attrs={ 'required' : 'True', 'max_length' : '30', 'placeholder' : 'Nome do Projeto', 'class' : 'form-control'}), label=_("Nome Projeto"), error_messages={ 'invalid': _("This value must contain only letters, numbers and underscores.") })
     email = forms.EmailField(widget=forms.TextInput(attrs={'required' : 'True', 'max_length' : '30', 'placeholder' : 'Email do Projeto', 'class' : 'form-control'}))
+
     
     class Meta:
         model = ProjetoKnowLeds

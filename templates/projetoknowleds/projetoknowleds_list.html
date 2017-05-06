@@ -28,8 +28,8 @@
         			</div>
         		</div><!-- /weather-2 header -->
         		<div class="row centered">
-        		  <p><a class="btn btn-danger btn-sm pull-center" data-toggle="modal" data-target="#myModal{{ projeto.pk }}">Integrar</a></p>
-        		  
+        		  <p>Link Integração:</p>
+        		  <p>{{ projeto.get_link_integracao }}</p>
         			<a href="{{ projeto.get_permalink }}">
         			  <img src="{% static 'assets/img/taiga-logo.png' %}" href="{{ projeto.get_permalink }}" class="img-circle" width="100">	
         			</a>

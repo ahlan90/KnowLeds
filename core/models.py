@@ -20,6 +20,7 @@ class ProjetoKnowLeds(models.Model):
     nome = models.CharField(max_length=200)
     email = models.EmailField(null=True)
     usuarios = models.ManyToManyField(User)
+    nome_webhook = models.CharField(max_length=200)
 
     def __str__(self):
         return 'Nome: ' + self.nome + ' , Email: ' + str(self.email)
@@ -36,6 +37,16 @@ class ProjetoKnowLeds(models.Model):
     def get_permalink(self):
         projeto = Projeto.objects.get(id=self.id)
         return projeto.permalink
+
+    def get_link_integracao(self):
+        return 'https://knowleds-ahlan90.c9users.io/wh/' + self.nome_webhook
+    
+    def save(self, *args, **kwargs):
+        
+        nome_webhook = str.lower(str(self.nome)).replace(" ","")
+        
+        super(ProjetoKnowLeds, self).save(*args, **kwargs)
+    
 
 
 class Solucao(models.Model):

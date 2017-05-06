@@ -19,7 +19,6 @@ from django.template import RequestContext
 
 """
     Views para SOLUCAO
-
 """
 
 
@@ -136,8 +135,11 @@ def projetoknowleds_create(request, template_name='projetoknowleds/projetoknowle
     if form.is_valid():
         projeto_knowleds = form.save()
         projeto_knowleds.usuarios.add(request.user)
+        projeto_knowleds.nome_webhook = str.lower(str(projeto_knowleds.nome).replace(" ",""))
         projeto_knowleds.save()
         return redirect('knowleds_list')
+    else :
+        print('Trouxa')
     return render(request, template_name, {'form':form})
 
 @login_required
