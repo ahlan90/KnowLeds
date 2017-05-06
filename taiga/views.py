@@ -32,15 +32,13 @@ def home(request):
 def get_taiga_status(request, nomeProjeto):
 
     try:
-        projeto_knowleds = ProjetoKnowLeds.objects.get(nome=nomeProjeto)
+        # Linka o projeto do Taiga com o projeto Knowleds
+        projeto_knowleds = ProjetoKnowLeds.objects.get(nome_webhook=nomeProjeto)
     except:
         pass
     
-    
-    if request.method == 'GET':
-        return Response("GET")
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         print ('POST')
         r = json.load(request)
         if r['action'] == 'create' :
@@ -233,7 +231,8 @@ def get_taiga_status(request, nomeProjeto):
             
         return Response("POST", status=status.HTTP_201_CREATED)
 
-
+    elif request.method == 'GET':
+        return Response("GET")
 """
     PROJETO
     
