@@ -26,10 +26,12 @@ def get_taiga_status(request, nomeProjeto):
                 
                 ## Salva o Sprint
                 sprint_save(r['data'], projeto)
-    
 
+
+## Converte os atributos do JSON para os atributos da classe e salva
 def projeto_save(jsonLoad, projetoKnowLeds):
-        
+    
+    # Pesquisa no banco se já existe o projeto salvo
     if Projeto.objects.filter(projeto_id=jsonLoad['id']):
         projeto = Projeto.objects.filter(projeto_id=jsonLoad['id'])[0]
     else:
