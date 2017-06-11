@@ -89,13 +89,11 @@ def get_taiga_status(request, nomeProjeto):
           
                 textoTag = task.titulo + ' precisa de ajuda, voce sabe a solucao'
                 
-                """"
                     
                 for tag in task.getTags():
                     if tag == 'ajuda' or tag == 'Ajuda' or tag == 'AJUDA':
                         print('Mandando o email...')
                         send_mail('Ajuda em UserStory', textoTag, 'ahlan90@gmail.com', ['ahlan90@gmail.com'], fail_silently=False)
-                """
                 
                 task.save()
             
@@ -110,12 +108,18 @@ def get_taiga_status(request, nomeProjeto):
                 issue.ident = r['data']['id']
                 issue.titulo = r['data']['subject']
                 issue.descricao = r['data']['description']
-                issue.tags = r['data']['description']
+                issue.setTags(r['data']['tags'])
                 issue.is_closed = r['data']['status']['is_closed']
                 issue.projeto = projeto
       
                 issue.save()
                 
+                textoTag = issue.titulo + ' precisa de ajuda, voce sabe a solucao'
+                
+                for tag in issue.getTags():
+                    if tag == 'ajuda' or tag == 'Ajuda' or tag == 'AJUDA':
+                        print('Mandando o email...')
+                        send_mail('Ajuda em UserStory', textoTag, 'ahlan90@gmail.com', ['ahlan90@gmail.com'], fail_silently=False)
 
         elif r['action'] == 'change':
             
@@ -204,13 +208,13 @@ def get_taiga_status(request, nomeProjeto):
                 issue.ident = r['data']['id']
                 issue.titulo = r['data']['subject']
                 issue.descricao = r['data']['description']
-                issue.tags = r['data']['description']
+                issue.setTags(r['data']['tags'])
                 issue.is_closed = r['data']['status']['is_closed']
                 issue.projeto = projeto
                 
                 issue.save()
 
-                """
+                
                 textoTag = issue.titulo + ' precisa de ajuda, voce sabe a solucao'
                 
                 for tag in issue.getTags():
@@ -218,9 +222,7 @@ def get_taiga_status(request, nomeProjeto):
                         print('Mandando o email...')
                         send_mail('Ajuda em UserStory', textoTag, 'ahlan90@gmail.com', ['ahlan90@gmail.com'], fail_silently=False)
 
-                """
 
-                
             #Se for SPRINT
             elif r['type'] == 'milestone':
                 

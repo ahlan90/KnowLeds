@@ -39,7 +39,7 @@ class ProjetoKnowLeds(models.Model):
         return projeto.permalink
 
     def get_link_integracao(self):
-        return 'https://knowleds-ahlan90.c9users.io/wh/' + self.nome_webhook
+        return 'https://knowleds-ahlan90.c9users.io/wh/' + self.nome_webhook + '/'
     
     def save(self, *args, **kwargs):
         

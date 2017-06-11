@@ -105,7 +105,7 @@ def register(request, template_name='registration/register.html'):
             usuario.user = user1
             usuario.save()
         
-            return HttpResponseRedirect('/register/success/')
+            return HttpResponseRedirect('/login')
     else:
         form = RegistrationForm(prefix='form')
         #form2 = ProjetoKnowLedsForm(prefix='form2')
@@ -116,7 +116,7 @@ def register(request, template_name='registration/register.html'):
     return render_to_response('registration/register.html', variables,)
  
 def register_success(request):
-    return render_to_response('registration/success.html',)
+    return render_to_response('/login',)
  
 def logout_page(request):
     logout(request)
