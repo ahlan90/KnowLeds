@@ -139,7 +139,7 @@ def projetoknowleds_create(request, template_name='projetoknowleds/projetoknowle
         projeto_knowleds.save()
         return redirect('knowleds_list')
     else :
-        print('Trouxa')
+        print('Não foi possivel salvar!')
     return render(request, template_name, {'form':form})
 
 @login_required
@@ -147,6 +147,7 @@ def projetoknowleds_list(request, template_name='projetoknowleds/projetoknowleds
     
     #usuario = Usuario.objects.get(user=request.user)
     """ Lista das solucoes ja cadastradas ao problema """
+    
     projetos = ProjetoKnowLeds.objects.all().filter(usuarios=request.user)
 
     data = {}
